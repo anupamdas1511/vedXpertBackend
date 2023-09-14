@@ -39,3 +39,5 @@ class Exception extends Error {
         return this._data
     }
 }
+
+export default Exception
