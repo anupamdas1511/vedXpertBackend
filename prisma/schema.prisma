@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Formulation {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  symptoms  String[]
+  pros      String[]
+  cons      String[]
+  drugs     Drugs[]
+  reference Reference[]
+  disease   Disease[]
+}
+
+model Drugs {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  name          String       @unique
+  properties    String[]
+  reference     Reference[]
+  pros          String?
+  cons          String?
+  Formulation   Formulation? @relation(fields: [formulationId], references: [id])
+  formulationId String?      @db.ObjectId
+}
+
+model Reference {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  bookName      String       @unique
+  wikipedia     String?
+  Formulation   Formulation? @relation(fields: [formulationId], references: [id])
+  formulationId String?      @db.ObjectId
+  Drugs         Drugs?       @relation(fields: [drugsId], references: [id])
+  drugsId       String?      @db.ObjectId
+}
+
+model Disease {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  symptoms      String[]
+  Formulation   Formulation? @relation(fields: [formulationId], references: [id])
+  formulationId String?      @db.ObjectId
+}
